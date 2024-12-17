@@ -6,6 +6,8 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+class ItemFilter(BaseModel):
+    item_ids: list[str] = []
 
 class Item(BaseModel):
     name: str
@@ -24,19 +26,6 @@ items = {
     2: Item(name="Plumbus", price=32.0, validUntil="2999-01-01", properties={"feeble": "schleem"}),
 }
 
-
-@app.get("/")
-def root():
-    return {"Hello": "World"}
-
-
-@app.get("/search")
-def search_items(q: Union[str, None] = None) -> list[Item]:
+@app.post("/items")
+def search_items(q: ItemFilter) -> list[Item]:
     return items.values()
-
-
-@app.get("/items/{item_id}")
-def get_item(item_id: int) -> Item:
-    if item_id not in items:
-        raise HTTPException(status_code=404, detail="Item not found")
-    return items[item_id]

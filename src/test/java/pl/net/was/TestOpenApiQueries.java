@@ -124,4 +124,13 @@ public class TestOpenApiQueries
                 null,
                 List.of(LocalDate.of(2007, 10, 10), LocalDate.of(2022, 12, 8)));
     }
+
+    @Test
+    public void searchItems()
+    {
+        List<MaterializedRow> rows = getQueryRunner().execute("SELECT name FROM fastapi.default.items WHERE item_ids IN (1)").getMaterializedRows();
+        // can't use assertQuery, because array of dates read from H2 as not using LocalDate
+        assertThat(rows).size().isEqualTo(1);
+    }
+
 }
