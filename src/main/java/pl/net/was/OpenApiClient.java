@@ -62,6 +62,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -486,14 +487,17 @@ public class OpenApiClient
     {
         ImmutableList.Builder<List<?>> resultRecordsBuilder = ImmutableList.builder();
 
-        Map<String, Object> pathParams = getFilterValues(table, PathItem.HttpMethod.GET, null);
+        Map<String, Object> params = new HashMap<>();
+        params.putAll(getFilterValues(table, PathItem.HttpMethod.POST, null));
+        params.putAll(getFilterValues(table, PathItem.HttpMethod.GET, null));
+
         if (jsonNode instanceof ArrayNode arrayNode) {
             for (JsonNode jsonRecord : arrayNode) {
-                resultRecordsBuilder.addAll(convertJsonToRecords(table, pathParams, jsonRecord));
+                resultRecordsBuilder.addAll(convertJsonToRecords(table, params, jsonRecord));
             }
         }
         else {
-            resultRecordsBuilder.addAll(convertJsonToRecords(table, pathParams, jsonNode));
+            resultRecordsBuilder.addAll(convertJsonToRecords(table, params, jsonNode));
         }
 
         return resultRecordsBuilder.build();
